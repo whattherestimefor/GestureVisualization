@@ -12,13 +12,31 @@ class GestureVisualizer: UIView {
 
     public let gesture: UIGestureRecognizer
     let _name: NSAttributedString
-    let _delay = 0.1
+    let _delay = 0.5
 
     var _drawAlternateChanged = false
     var _sentMessage = false
 
     var transitionsToAnimate: [(UIGestureRecognizer.State, UIGestureRecognizer.State)]?
     var timer: Timer?
+
+    init(gesture: UIGestureRecognizer, name: String, frame: CGRect) {
+        self.gesture = gesture
+        _name = NSAttributedString (string: name, attributes: [ NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 20)])
+        super.init(frame: frame)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        if isVisualizingDiscreteGesture() {
+            return CGSize(width: size(circleCount: 2), height: size(circleCount: 2))
+        } else {
+            return CGSize(width: size(circleCount: 3), height: size(circleCount: 4))
+        }
+    }
 
     public func animate(_ transition: (UIGestureRecognizer.State, UIGestureRecognizer.State)) {
         if (transitionsToAnimate == nil) {
@@ -52,23 +70,33 @@ class GestureVisualizer: UIView {
         }
     }
 
-    init(gesture: UIGestureRecognizer, name: String, frame: CGRect) {
-        self.gesture = gesture
-        _name = NSAttributedString (string: name, attributes: [ NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 20)])
-        super.init(frame: frame)
-    }
+    //MARK: State Machine Basics
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var intrinsicContentSize: CGSize {
+    func possibleTransitions() -> [(UIGestureRecognizer.State, UIGestureRecognizer.State)] {
         if isVisualizingDiscreteGesture() {
-            return CGSize(width: size(circleCount: 2), height: size(circleCount: 2))
+            return [(.possible, .failed), (.possible, .recognized)]
         } else {
-            return CGSize(width: size(circleCount: 3), height: size(circleCount: 4))
+            return [(.possible, .failed), (.possible, .began),
+                    (.began, .changed), (.began, .failed), (.began, .cancelled),
+                    (.changed, .changed), (.changed, .failed), (.changed, .cancelled),
+                    (.changed, .recognized)]
         }
     }
+
+    func states() -> [UIGestureRecognizer.State] {
+        if isVisualizingDiscreteGesture() {
+            return [.possible, .failed, .recognized]
+        } else {
+            return [.possible, .began, .changed, .recognized, .failed, .cancelled];
+        }
+    }
+
+    func isVisualizingDiscreteGesture() -> Bool
+    {
+        return gesture is UITapGestureRecognizer || gesture is UISwipeGestureRecognizer
+    }
+
+    //MARK: Drawing
 
     override func draw(_ rect: CGRect) {
 
@@ -84,8 +112,6 @@ class GestureVisualizer: UIView {
             context?.setFillColor(UIColor.blue.withAlphaComponent(0.25).cgColor)
             context?.fill(rect)
         }
-//        context?.setStrokeColor(UIColor.blue.cgColor)
-//        context?.stroke(rect)
 
         // draw titles
         _name.draw(at: CGPoint(x: 10, y: 5))
@@ -146,10 +172,7 @@ class GestureVisualizer: UIView {
         }
     }
 
-    func isVisualizingDiscreteGesture() -> Bool
-    {
-        return gesture is UITapGestureRecognizer || gesture is UISwipeGestureRecognizer
-    }
+    //MARK: Helpers
 
     func niceControlPoint(start: CGPoint, end: CGPoint) -> CGPoint {
         let deltaX = end.x - start.x
@@ -160,25 +183,6 @@ class GestureVisualizer: UIView {
         transform = transform.rotated(by: slope * CGFloat.pi/2.0)
         transform = transform.translatedBy(x: -midPoint.x, y: -midPoint.y)
         return start.applying(transform)
-    }
-
-    func possibleTransitions() -> [(UIGestureRecognizer.State, UIGestureRecognizer.State)] {
-        if isVisualizingDiscreteGesture() {
-            return [(.possible, .failed), (.possible, .recognized)]
-        } else {
-            return [(.possible, .failed), (.possible, .began),
-                    (.began, .changed), (.began, .failed), (.began, .cancelled),
-                    (.changed, .changed), (.changed, .failed), (.changed, .cancelled),
-                    (.changed, .recognized)]
-        }
-    }
-
-    func states() -> [UIGestureRecognizer.State] {
-        if isVisualizingDiscreteGesture() {
-            return [.possible, .failed, .recognized]
-        } else {
-            return [.possible, .began, .changed, .recognized, .failed, .cancelled];
-        }
     }
 
     func color(for state: UIGestureRecognizer.State) -> UIColor {

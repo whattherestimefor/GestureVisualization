@@ -11,11 +11,22 @@ import UIKit
 class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var stackView: UIStackView?
+
+    var showTouchOnScreen = true
+    var noWaitLongpress: UIGestureRecognizer?
+    var touchVisualizer: TouchVisualizer?
     
     var gestureVisualizers = [GestureVisualizer]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if (showTouchOnScreen) {
+            let touchGesture = UILongPressGestureRecognizer.init(target: self, action: #selector(touchUpdate(gesture:)))
+            touchGesture.minimumPressDuration = 0.0
+            view.addGestureRecognizer(touchGesture)
+            noWaitLongpress = touchGesture
+        }
         
 //        let gestures = doubleTapSingleTap(requireToFail: false)
 //        let gestures = doubleTapSingleTap(requireToFail: true)
@@ -32,9 +43,20 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
 
+    //MARK: UIGestureRecognizerDelegate
+
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
+
+        if gestureRecognizer == noWaitLongpress || otherGestureRecognizer == noWaitLongpress {
+            return true   // showing touches depends on an extra gesture recognizer that isn't visualized, so gestures have to be allowed to recognize with it
+        }
+
+        // default is false
+        return false
+     //   return true
     }
+
+    //MARK: Gesture Set Ups
 
     func doubleTapSingleTap(requireToFail: Bool) -> ([(String, UIGestureRecognizer)]) {
         let doubleTap = UITapGestureRecognizer();
@@ -51,9 +73,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     func panLongPressTap() -> ([(String, UIGestureRecognizer)]) {
         return [("Longpress", UILongPressGestureRecognizer()),
                 ("Pan", UIPanGestureRecognizer()),
-                ("Tap", UITapGestureRecognizer())
+              //  ("Tap", UITapGestureRecognizer())
         ]
     }
+
+    //MARK: Update Gesture Diagrams
 
     @objc func gestureChanged(gesture: UIGestureRecognizer) {
         for visualizer in gestureVisualizers {
@@ -80,6 +104,52 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
                 guard let oldState = UIGestureRecognizer.State(rawValue: oldStateRaw), let newState = UIGestureRecognizer.State(rawValue: newStateRaw) else { return }
                 visualizer.animate((oldState, newState))
                 return
+            }
+        }
+    }
+
+    //MARK: Visualize Initial Touch
+
+    let minRadius: CGFloat = 3
+    let radiusGrowthDelta: CGFloat = 25
+    let animationTime = 0.2
+
+    @objc func touchUpdate(gesture: UIGestureRecognizer) {
+        if gesture.state == .ended || gesture.state == .failed || gesture.state == .cancelled {
+            guard let touchView = touchVisualizer else { return }
+            removeTouchView(touchView: touchView)
+        } else {
+            // update the location
+            let location = gesture.location(in: self.view)
+            if let touchView = touchVisualizer {
+                // we have a touch view.  update its location.
+                var newFrame = touchView.frame
+                newFrame.origin.x = location.x - touchView.frame.size.width/2.0
+                newFrame.origin.y = location.y - touchView.frame.size.height/2.0
+                touchView.frame = newFrame
+            } else {
+                // we have no touch view.  create one.
+                let frame = CGRect(x: location.x - minRadius, y: location.y - minRadius, width: minRadius * 2, height: minRadius * 2)
+                let touchVis = TouchVisualizer.init(frame: frame)
+                self.view.addSubview(touchVis)
+                UIView.animate(withDuration: animationTime) {
+                    touchVis.frame = touchVis.frame.inset(by: UIEdgeInsets.init(top: -self.radiusGrowthDelta, left: -self.radiusGrowthDelta, bottom: -self.radiusGrowthDelta, right: -self.radiusGrowthDelta))
+                }
+                touchVisualizer = touchVis
+            }
+        }
+    }
+
+    func removeTouchView(touchView: UIView) {
+        if (touchView == self.touchVisualizer) {
+            self.touchVisualizer = nil
+        }
+        let delay = touchView.frame.size.width > radiusGrowthDelta ? 0 : animationTime
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            UIView.animate(withDuration: self.animationTime, animations: {
+                touchView.frame = touchView.frame.inset(by: UIEdgeInsets.init(top: self.radiusGrowthDelta, left: self.radiusGrowthDelta, bottom: self.radiusGrowthDelta, right: self.radiusGrowthDelta))
+            }) { (_) in
+                touchView.removeFromSuperview()
             }
         }
     }

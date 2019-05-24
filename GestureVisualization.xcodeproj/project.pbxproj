@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB26D617228CAAA000F6E5A2 /* TouchVisualizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB26D616228CAAA000F6E5A2 /* TouchVisualizer.swift */; };
 		FB6E5B9F226CAC4C00D3D348 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB6E5B9E226CAC4C00D3D348 /* AppDelegate.swift */; };
 		FB6E5BA1226CAC4C00D3D348 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB6E5BA0226CAC4C00D3D348 /* ViewController.swift */; };
 		FB6E5BA4226CAC4C00D3D348 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB6E5BA2226CAC4C00D3D348 /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FB26D616228CAAA000F6E5A2 /* TouchVisualizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchVisualizer.swift; sourceTree = "<group>"; };
 		FB6E5B9B226CAC4C00D3D348 /* GestureVisualization.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GestureVisualization.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB6E5B9E226CAC4C00D3D348 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FB6E5BA0226CAC4C00D3D348 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				FB6E5BA7226CAC4E00D3D348 /* LaunchScreen.storyboard */,
 				FB6E5BAA226CAC4E00D3D348 /* Info.plist */,
 				FB6E5BB0226CACB600D3D348 /* GestureVisualizer.swift */,
+				FB26D616228CAAA000F6E5A2 /* TouchVisualizer.swift */,
 			);
 			path = GestureVisualization;
 			sourceTree = "<group>";
@@ -139,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FB6E5BA1226CAC4C00D3D348 /* ViewController.swift in Sources */,
+				FB26D617228CAAA000F6E5A2 /* TouchVisualizer.swift in Sources */,
 				FB6E5B9F226CAC4C00D3D348 /* AppDelegate.swift in Sources */,
 				FB6E5BB1226CACB600D3D348 /* GestureVisualizer.swift in Sources */,
 			);
@@ -287,6 +291,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9498W2E23C;
 				INFOPLIST_FILE = GestureVisualization/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -304,6 +309,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9498W2E23C;
 				INFOPLIST_FILE = GestureVisualization/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
