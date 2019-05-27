@@ -1,5 +1,8 @@
 # GestureVisualization
+
 A sample app to get visual feedback from UIGestureRecognizer subclasses.
+
+Note: This app is meant for ipad only as it provides enough screen space to see both long press and pan gesture state machine side by side.
 
 The view controller is already set up to create a few GestureVisualizers and stick them in the view.
 
