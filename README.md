@@ -1,5 +1,8 @@
 # GestureVisualization
+
 A sample app to get visual feedback from UIGestureRecognizer subclasses.
+
+Note: This app is meant for ipad only as it provides enough screen space to see both long press and pan gesture state machine side by side. But if you want to use the app in a smaller screen. You can change the radius and padding values in the file "GestureVisualizer.swift". For example, on iPhone 6s you can change the radius value from 40 to 30 and use landscape mode to see both long press and pan gesture state machine side by side.
 
 The view controller is already set up to create a few GestureVisualizers and stick them in the view.
 
